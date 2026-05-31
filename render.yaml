@@ -1,0 +1,23 @@
+# Optional Blueprint for Render (Dashboard deploy works without this file).
+# Set the same env vars in Render → Environment if not using Blueprint.
+services:
+  - type: web
+    name: sb-ecom
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false

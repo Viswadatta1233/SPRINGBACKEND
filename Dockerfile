@@ -14,6 +14,13 @@ WORKDIR /app
 
 COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.jar app.jar
 
+ENV SPRING_PROFILES_ACTIVE=prod
+
 EXPOSE 8080
 
-CMD ["java", "-jar", "app.jar"]
+# Render sets PORT; bind all interfaces; cap heap for 512MB instances
+CMD ["java", \
+     "-XX:+UseContainerSupport", \
+     "-XX:MaxRAMPercentage=75.0", \
+     "-Djava.security.egd=file:/dev/./urandom", \
+     "-jar", "app.jar"]
