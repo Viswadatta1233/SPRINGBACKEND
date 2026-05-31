@@ -64,14 +64,15 @@ public class AuthServiceImpl implements AuthService {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        String jwt = jwtUtils.generateTokenFromUsername(userDetails.getUsername());
+        ResponseCookie jwtCookie = jwtUtils.buildJwtCookie(jwt);
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
         UserInfoResponse response = new UserInfoResponse(userDetails.getId(),
-                userDetails.getUsername(), roles, userDetails.getEmail(), jwtCookie.toString());
+                userDetails.getUsername(), roles, userDetails.getEmail(), jwt);
 
         return new AuthenticationResult(response, jwtCookie);
     }

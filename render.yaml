@@ -1,5 +1,10 @@
 # Optional Blueprint for Render (Dashboard deploy works without this file).
-# Set the same env vars in Render → Environment if not using Blueprint.
+#
+# CRITICAL — Supabase from Render:
+# Use Transaction pooler (port 6543), NOT direct db.xxx.supabase.co:5432 (IPv6 → "Network is unreachable").
+# SPRING_DATASOURCE_URL=jdbc:postgresql://<region>.pooler.supabase.com:6543/postgres?sslmode=require
+# SPRING_DATASOURCE_USERNAME=postgres.<project-ref>
+# In Supabase: Database → Network → allow connections from anywhere (or Render egress IPs).
 services:
   - type: web
     name: sb-ecom

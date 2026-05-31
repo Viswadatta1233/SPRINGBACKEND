@@ -31,6 +31,16 @@ public class JwtUtils {
     @Value("${spring.ecom.app.jwtCookieName}")
     private String jwtCookie;
 
+    /** When true, cookie is Secure (required for SameSite=None cross-origin). */
+    @Value("${app.jwt.cookie.secure:false}")
+    private boolean cookieSecure;
+
+    @Value("${app.jwt.cookie.same-site:Lax}")
+    private String cookieSameSite;
+
+    @Value("${app.jwt.cookie.path:/api}")
+    private String cookiePath;
+
     public String getJwtFromCookies(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, jwtCookie);
         if (cookie != null) {
@@ -49,21 +59,26 @@ public class JwtUtils {
     }
 
     public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
-        String jwt = generateTokenFromUsername(userPrincipal.getUsername());
-        ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt)
-                .path("/api")
+        return buildJwtCookie(generateTokenFromUsername(userPrincipal.getUsername()));
+    }
+
+    public ResponseCookie buildJwtCookie(String jwt) {
+        return ResponseCookie.from(jwtCookie, jwt)
+                .path(cookiePath)
                 .maxAge(24 * 60 * 60)
                 .httpOnly(false)
-                .secure(false)
+                .secure(cookieSecure)
+                .sameSite(cookieSameSite)
                 .build();
-        return cookie;
     }
 
     public ResponseCookie getCleanJwtCookie() {
-        ResponseCookie cookie = ResponseCookie.from(jwtCookie, null)
-                .path("/api")
+        return ResponseCookie.from(jwtCookie, null)
+                .path(cookiePath)
+                .maxAge(0)
+                .secure(cookieSecure)
+                .sameSite(cookieSameSite)
                 .build();
-        return cookie;
     }
 
     public String generateTokenFromUsername(String username) {
